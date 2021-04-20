@@ -49,7 +49,7 @@ func (service *demoParseService) ParsePlayerSpots(cxt *gin.Context, demoFile *mu
 
 	err := parser.ParseToEnd()
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	parser.Close()
@@ -181,7 +181,7 @@ func generateHeatMapPointsData(demoFile *multipart.File, name string, playerType
 
 	err = parser.ParseToEnd()
 	if err != nil {
-		panic(err)
+		return "", image.Rectangle{}, nil, nil, err
 	}
 
 	parser.Close()
