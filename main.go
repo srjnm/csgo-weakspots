@@ -14,9 +14,10 @@ func main() {
 	var port string
 	err := godotenv.Load()
 	if err != nil {
-		port = "8080"
-	} else {
 		port = os.Getenv("PORT")
+	}
+	if port == "" {
+		port = "8080"
 	}
 
 	gin.SetMode(gin.ReleaseMode)
