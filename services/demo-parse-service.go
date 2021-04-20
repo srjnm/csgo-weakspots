@@ -163,17 +163,25 @@ func generateHeatMapPointsData(demoFile *multipart.File, name string, playerType
 	parser.RegisterEventHandler(
 		func(e events.Kill) {
 			if parser.GameState().IsMatchStarted() {
-				if e.Victim.Name == name && e.Killer.ActiveWeapon().Type.String() != "Knife" {
-					var x, y float64
+				// Making sure Victim or Killer is not nil(which might be caused if the file was corrupted)
+				if playerType == 0 && e.Victim != nil {
+					if e.Victim.Name == name && e.Weapon.Type.String() != "Knife" {
+						var x, y float64
 
-					// Convert In-Game coordinates to map coordinates
-					if playerType == 0 {
+						// Convert In-Game coordinates to map coordinates
 						x, y = mapMetaData.TranslateScale(e.Victim.LastAlivePosition.X, e.Victim.LastAlivePosition.Y)
-					} else {
-						x, y = mapMetaData.TranslateScale(e.Killer.Position().X, e.Killer.Position().Y)
-					}
 
-					points = append(points, r2.Point{X: x, Y: y})
+						points = append(points, r2.Point{X: x, Y: y})
+					}
+				} else if playerType == 1 && e.Victim != nil && e.Killer != nil {
+					if e.Victim.Name == name && e.Weapon.Type.String() != "Knife" {
+						var x, y float64
+
+						// Convert In-Game coordinates to map coordinates
+						x, y = mapMetaData.TranslateScale(e.Killer.Position().X, e.Killer.Position().Y)
+
+						points = append(points, r2.Point{X: x, Y: y})
+					}
 				}
 			}
 		},
