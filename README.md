@@ -5,11 +5,12 @@ An EZ to use website that Generates Heatmaps through the CS:GO Demo files to Ana
 # Output Example
 <img src="https://i.ibb.co/J7gkfgL/index.jpg">
 
-<br>
 
 # Hosted At
 ### [WeakSpots](https://weakspots.herokuapp.com/) ###
-
+Try it out using:
+* **Player Name:** &nbsp;&nbsp;aswin030
+* **Download:** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Demo File](https://drive.google.com/file/d/1V9QpF6NV7m3DSKCXKOPcJcmR8DvAFMoc/view?usp=sharing)
 
 # About the Project
 This project was made with Go(Golang) and Bootstrap.
