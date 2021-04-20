@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Create CS:GO Heatmaps to Analyze your WeakSpots">
+    <title>WeakSpots</title>
+    <link rel="icon" type="image/png" href="/favicon.png">  
+
+<link href="./assets/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+    </style>
+
+    
+    <link href="./assets/css/index.css" rel="stylesheet">
+  </head>
+  <body class="text-center">
+    
+<main class="form-demo">
+  <form enctype="multipart/form-data" action="http://localhost:8080/spotmap" method="post">
+    <img class="mb-4" src="./assets/images/logo.png" alt="" height="54">
+    <h1 class="h4 mb-4 fw-italic text-primary">Analyze your CS:GO Demo</h1>
+
+    <div class="form-floating">
+      <input type="text" name="player" class="form-control" required id="floatingInput" placeholder="Player Name">
+      <label for="floatingInput">Player Name</label>
+    </div>
+    <div class="form-floating">
+      <input type="file" name="demo" accept=".dem" class="form-control py-5 pl-5" required id="floatingInput">
+      <label for="floatingPassword">Upload Demo File(.dem)</label>
+    </div>
+
+    <button class="w-100 btn btn-lg btn-primary" type="submit">Analyze</button>
+  </form>
+</main>
+
+
+    
+  </body>
+</html>
