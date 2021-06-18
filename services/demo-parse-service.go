@@ -11,15 +11,17 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"strings"
 
 	heatmap "github.com/dustin/go-heatmap"
 	schemes "github.com/dustin/go-heatmap/schemes"
+	"github.com/fogleman/gg"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/geo/r2"
-	demo "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs"
-	events "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/events"
-	metadata "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/metadata"
 	uuid "github.com/satori/go.uuid"
+	demo "github.com/srjnm/demoinfocs-golang/pkg/demoinfocs"
+	events "github.com/srjnm/demoinfocs-golang/pkg/demoinfocs/events"
+	metadata "github.com/srjnm/demoinfocs-golang/pkg/demoinfocs/metadata"
 )
 
 type DemoParseService interface {
@@ -39,8 +41,11 @@ func (service *demoParseService) ParsePlayerSpots(cxt *gin.Context, demoFile *mu
 
 	flag := 0
 
+	var players []string
+
 	parser.RegisterEventHandler(
 		func(e events.PlayerConnect) {
+			players = append(players, e.Player.Name)
 			if e.Player.Name == name {
 				flag = 1
 			}
@@ -55,7 +60,7 @@ func (service *demoParseService) ParsePlayerSpots(cxt *gin.Context, demoFile *mu
 	parser.Close()
 
 	if flag == 0 {
-		return errors.New("Player Name Invalid!")
+		return errors.New("Player Name Invalid! Connected Players: " + strings.Join(players, ", "))
 	}
 
 	// Get Victim Data
@@ -98,22 +103,101 @@ func (service *demoParseService) ParsePlayerSpots(cxt *gin.Context, demoFile *mu
 	outImg := image.NewRGBA(mapImg.Bounds())
 
 	// Apply Map as BG
-	draw.Draw(outImg, mapImg.Bounds(), mapImg, image.ZP, draw.Over)
+	draw.Draw(outImg, mapImg.Bounds(), mapImg, image.Point{}, draw.Over)
+
+	// Add Connection Lines
+	// var lDx, lDy int
+	// if vBoundingRect.Dx() > eBoundingRect.Dx() {
+	// 	lDx = vBoundingRect.Dx()
+	// } else {
+	// 	lDx = eBoundingRect.Dx()
+	// }
+	// if vBoundingRect.Dy() > eBoundingRect.Dy() {
+	// 	lDy = vBoundingRect.Dy()
+	// } else {
+	// 	lDy = eBoundingRect.Dy()
+	// }
+
+	// var lMaxX, lMaxY int
+	// if vBoundingRect.Max.X > eBoundingRect.Max.X {
+	// 	lMaxX = vBoundingRect.Max.X
+	// } else {
+	// 	lMaxX = eBoundingRect.Max.X
+	// }
+	// if vBoundingRect.Max.Y > eBoundingRect.Max.Y {
+	// 	lMaxY = vBoundingRect.Max.Y
+	// } else {
+	// 	lMaxY = eBoundingRect.Max.Y
+	// }
+
+	// var lMinX, lMinY int
+	// if vBoundingRect.Min.X > eBoundingRect.Min.X {
+	// 	lMinX = vBoundingRect.Min.X
+	// } else {
+	// 	lMinX = eBoundingRect.Min.X
+	// }
+	// if vBoundingRect.Min.Y > eBoundingRect.Min.Y {
+	// 	lMinY = vBoundingRect.Min.Y
+	// } else {
+	// 	lMinY = eBoundingRect.Min.Y
+	// }
+
+	lineCxt := gg.NewContext(1024, 1024)
+
+	lineCxt.SetLineWidth(3)
+	lineCxt.SetColor(color.White)
+	lineCxt.SetLineCapSquare()
+	// var scaleAbout float64
+	// var scalingFactor float64
+	// if mapName == "de_dust2" {
+	// 	scaleAbout = 0.0
+	// 	scalingFactor = 0.98
+	// } else {
+	// 	scaleAbout = 528.0
+	// 	scalingFactor = 0.96
+	// }
+	// scalingFactor := 0.98
+	// lineCxt.ScaleAbout(scalingFactor, scalingFactor, float64(0.0), float64(0.0))
+	for index := range vData {
+		if index < len(vData) && index < len(eData) {
+			lineCxt.DrawLine(vData[index].X(), vData[index].Y()*-1, eData[index].X(), eData[index].Y()*-1)
+		}
+	}
+	lineCxt.Stroke()
+
+	lineName := "temp/temp-" + uuid.NewV1().String() + ".png"
+
+	lineCxt.SavePNG(lineName)
+
+	// Load Lines Image
+	lnImage, err := os.Open(lineName)
+	if err != nil {
+		return err
+	}
+
+	// Decode Lines Image
+	conLineImg, _, err := image.Decode(lnImage)
+	if err != nil {
+		return err
+	}
+
+	// Apply Connection Lines
+	draw.Draw(outImg, lineCxt.Image().Bounds(), conLineImg, image.Point{}, draw.Over)
 
 	// Genrate Victim Heatmap
-	vHeatmapImg := heatmap.Heatmap(image.Rect(0, 0, vBoundingRect.Dx(), vBoundingRect.Dy()), vData, 30, 192, vScheme)
+	vHeatmapImg := heatmap.Heatmap(image.Rect(0, 0, vBoundingRect.Dx(), vBoundingRect.Dy()), vData, 30, 230, vScheme)
 
 	// Genrate Enemy Heatmap
-	eHeatmapImg := heatmap.Heatmap(image.Rect(0, 0, eBoundingRect.Dx(), eBoundingRect.Dy()), eData, 30, 192, eScheme)
+	eHeatmapImg := heatmap.Heatmap(image.Rect(0, 0, eBoundingRect.Dx(), eBoundingRect.Dy()), eData, 30, 230, eScheme)
 
 	// Apply Victim Heatmap over BG
-	draw.Draw(outImg, vBoundingRect, vHeatmapImg, image.ZP, draw.Over)
+	draw.Draw(outImg, vBoundingRect, vHeatmapImg, image.Point{}, draw.Over)
 
 	// Apply Enemy Heatmap over BG
-	draw.Draw(outImg, eBoundingRect, eHeatmapImg, image.ZP, draw.Over)
+	draw.Draw(outImg, eBoundingRect, eHeatmapImg, image.Point{}, draw.Over)
 
 	// Apply Overlay
-	draw.Draw(outImg, ovrImg.Bounds(), ovrImg, image.ZP, draw.Over)
+	draw.Draw(outImg, ovrImg.Bounds(), ovrImg, image.Point{}, draw.Over)
 
 	// Encode Image to JPEG
 	jpegImg, err := os.Create("temp/temp-" + uuid.NewV1().String() + ".jpeg")
@@ -134,6 +218,11 @@ func (service *demoParseService) ParsePlayerSpots(cxt *gin.Context, demoFile *mu
 	b64 := base64.StdEncoding.EncodeToString(imgByte)
 
 	err = os.Remove(jpegImg.Name())
+	if err != nil {
+		return err
+	}
+
+	err = os.Remove(lineName)
 	if err != nil {
 		return err
 	}
@@ -201,8 +290,9 @@ func generateHeatMapPointsData(demoFile *multipart.File, name string, playerType
 	// Get bounding rectangle of points to be mapped
 	r2bound := r2.RectFromPoints(points...)
 	boundingRect := image.Rectangle{
-		Min: image.Point{X: int(r2bound.X.Lo), Y: int(r2bound.Y.Lo)},
-		Max: image.Point{X: int(r2bound.X.Hi), Y: int(r2bound.Y.Hi)},
+		// Expanded bounding rectangle to fix shrinkage
+		Min: image.Point{X: int(r2bound.X.Lo - 16), Y: int(r2bound.Y.Lo - 16)},
+		Max: image.Point{X: int(r2bound.X.Hi + 16), Y: int(r2bound.Y.Hi + 16)},
 	}
 
 	// Convert Points into heatmap Datapoints

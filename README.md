@@ -3,15 +3,15 @@ An EZ to use website that Generates Heatmaps through the CS:GO Demo files to Ana
 
 
 # Output Example
-<img src="https://i.ibb.co/J7gkfgL/index.jpg">
+<img src="https://i.ibb.co/r3mrzwF/electronic-ancient.jpg">
 
 
 # Hosted At
 ### [WeakSpots](https://weakspots.herokuapp.com/) ###
 Try it out using:
-* **Player Name:** &nbsp;&nbsp;ppb1aster
-* **Download:** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Demo File](https://drive.google.com/file/d/1V9QpF6NV7m3DSKCXKOPcJcmR8DvAFMoc/view?usp=sharing)
-* **Scoreboard:** &nbsp;&nbsp;&nbsp;&nbsp;[FACEIT](https://www.faceit.com/en/csgo/room/1-283f208c-f97e-4d83-8f6b-4f6a22839f0c/scoreboard)
+* **Player Name:** &nbsp;&nbsp;electronic
+* **Download:** &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Demo File](https://drive.google.com/file/d/19DgALLPVG3eyENWfeFa6X-DNpp1J_i9l/view?usp=sharing)
+* **Scoreboard:** &nbsp;&nbsp;&nbsp;&nbsp;[HLTV](https://www.hltv.org/stats/matches/mapstatsid/122163/natus-vincere-vs-faze)
 
 # About the Project
 This project was made with Go(Golang) and Bootstrap.
