@@ -22,7 +22,7 @@ func main() {
 
 	gin.SetMode(gin.ReleaseMode)
 
-	demoService := services.NewDemoParseService()
+	demoService := services.NewDemoParseService(30)
 	demoController := controllers.NewDemoController(demoService)
 	demoAPI := apis.NewDemoAPI(demoController)
 

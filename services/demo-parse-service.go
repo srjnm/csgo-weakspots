@@ -18,10 +18,10 @@ import (
 	"github.com/fogleman/gg"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/geo/r2"
+	demo "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs"
+	events "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/events"
+	metadata "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/metadata"
 	uuid "github.com/satori/go.uuid"
-	demo "github.com/srjnm/demoinfocs-golang/pkg/demoinfocs"
-	events "github.com/srjnm/demoinfocs-golang/pkg/demoinfocs/events"
-	metadata "github.com/srjnm/demoinfocs-golang/pkg/demoinfocs/metadata"
 )
 
 type DemoParseService interface {
@@ -29,10 +29,13 @@ type DemoParseService interface {
 }
 
 type demoParseService struct {
+	dotSize int
 }
 
-func NewDemoParseService() DemoParseService {
-	return &demoParseService{}
+func NewDemoParseService(dotSize int) DemoParseService {
+	return &demoParseService{
+		dotSize: dotSize,
+	}
 }
 
 func (service *demoParseService) ParsePlayerSpots(cxt *gin.Context, demoFile *multipart.File, demoFileV *multipart.File, demoFileE *multipart.File, name string) error {
@@ -64,13 +67,13 @@ func (service *demoParseService) ParsePlayerSpots(cxt *gin.Context, demoFile *mu
 	}
 
 	// Get Victim Data
-	mapName, vBoundingRect, vData, vScheme, err := generateHeatMapPointsData(demoFileV, name, 0)
+	mapName, vBoundingRect, vData, vScheme, err := generateHeatMapPointsData(demoFileV, name, 0, service.dotSize)
 	if err != nil {
 		return err
 	}
 
 	// Get Enemy Data
-	_, eBoundingRect, eData, eScheme, err := generateHeatMapPointsData(demoFileE, name, 1)
+	_, eBoundingRect, eData, eScheme, err := generateHeatMapPointsData(demoFileE, name, 1, service.dotSize)
 	if err != nil {
 		return err
 	}
@@ -185,10 +188,10 @@ func (service *demoParseService) ParsePlayerSpots(cxt *gin.Context, demoFile *mu
 	draw.Draw(outImg, lineCxt.Image().Bounds(), conLineImg, image.Point{}, draw.Over)
 
 	// Genrate Victim Heatmap
-	vHeatmapImg := heatmap.Heatmap(image.Rect(0, 0, vBoundingRect.Dx(), vBoundingRect.Dy()), vData, 30, 230, vScheme)
+	vHeatmapImg := heatmap.Heatmap(image.Rect(0, 0, vBoundingRect.Dx(), vBoundingRect.Dy()), vData, service.dotSize, 230, vScheme)
 
 	// Genrate Enemy Heatmap
-	eHeatmapImg := heatmap.Heatmap(image.Rect(0, 0, eBoundingRect.Dx(), eBoundingRect.Dy()), eData, 30, 230, eScheme)
+	eHeatmapImg := heatmap.Heatmap(image.Rect(0, 0, eBoundingRect.Dx(), eBoundingRect.Dy()), eData, service.dotSize, 230, eScheme)
 
 	// Apply Victim Heatmap over BG
 	draw.Draw(outImg, vBoundingRect, vHeatmapImg, image.Point{}, draw.Over)
@@ -234,7 +237,7 @@ func (service *demoParseService) ParsePlayerSpots(cxt *gin.Context, demoFile *mu
 	return nil
 }
 
-func generateHeatMapPointsData(demoFile *multipart.File, name string, playerType int) (string, image.Rectangle, []heatmap.DataPoint, []color.Color, error) {
+func generateHeatMapPointsData(demoFile *multipart.File, name string, playerType int, dotSize int) (string, image.Rectangle, []heatmap.DataPoint, []color.Color, error) {
 	// Create Parser
 	parser := demo.NewParser(*demoFile)
 
@@ -289,10 +292,10 @@ func generateHeatMapPointsData(demoFile *multipart.File, name string, playerType
 
 	// Get bounding rectangle of points to be mapped
 	r2bound := r2.RectFromPoints(points...)
+	padding := float64(dotSize) / 2.0 // Add padding to bounding rectangle to avoid shrinkage
 	boundingRect := image.Rectangle{
-		// Expanded bounding rectangle to fix shrinkage
-		Min: image.Point{X: int(r2bound.X.Lo - 16), Y: int(r2bound.Y.Lo - 16)},
-		Max: image.Point{X: int(r2bound.X.Hi + 16), Y: int(r2bound.Y.Hi + 16)},
+		Min: image.Point{X: int(r2bound.X.Lo - padding), Y: int(r2bound.Y.Lo - padding)},
+		Max: image.Point{X: int(r2bound.X.Hi + padding), Y: int(r2bound.Y.Hi + padding)},
 	}
 
 	// Convert Points into heatmap Datapoints
