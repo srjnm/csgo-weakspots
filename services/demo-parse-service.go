@@ -256,7 +256,7 @@ func generateHeatMapPointsData(demoFile *multipart.File, name string, playerType
 		func(e events.Kill) {
 			if parser.GameState().IsMatchStarted() {
 				// Making sure Victim or Killer is not nil(which might be caused if the file was corrupted)
-				if playerType == 0 && e.Victim != nil {
+				if playerType == 0 && e.Victim != nil && e.Killer != nil {
 					if e.Victim.Name == name && e.Weapon.Type.String() != "Knife" {
 						var x, y float64
 

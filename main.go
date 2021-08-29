@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -11,6 +12,8 @@ import (
 )
 
 func main() {
+	fmt.Println("Server startup in progress..")
+
 	var port string
 	err := godotenv.Load()
 	if err != nil {
@@ -22,7 +25,7 @@ func main() {
 
 	gin.SetMode(gin.ReleaseMode)
 
-	demoService := services.NewDemoParseService(30)
+	demoService := services.NewDemoParseService(18)
 	demoController := controllers.NewDemoController(demoService)
 	demoAPI := apis.NewDemoAPI(demoController)
 
