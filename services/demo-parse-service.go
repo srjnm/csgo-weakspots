@@ -109,58 +109,11 @@ func (service *demoParseService) ParsePlayerSpots(cxt *gin.Context, demoFile *mu
 	draw.Draw(outImg, mapImg.Bounds(), mapImg, image.Point{}, draw.Over)
 
 	// Add Connection Lines
-	// var lDx, lDy int
-	// if vBoundingRect.Dx() > eBoundingRect.Dx() {
-	// 	lDx = vBoundingRect.Dx()
-	// } else {
-	// 	lDx = eBoundingRect.Dx()
-	// }
-	// if vBoundingRect.Dy() > eBoundingRect.Dy() {
-	// 	lDy = vBoundingRect.Dy()
-	// } else {
-	// 	lDy = eBoundingRect.Dy()
-	// }
-
-	// var lMaxX, lMaxY int
-	// if vBoundingRect.Max.X > eBoundingRect.Max.X {
-	// 	lMaxX = vBoundingRect.Max.X
-	// } else {
-	// 	lMaxX = eBoundingRect.Max.X
-	// }
-	// if vBoundingRect.Max.Y > eBoundingRect.Max.Y {
-	// 	lMaxY = vBoundingRect.Max.Y
-	// } else {
-	// 	lMaxY = eBoundingRect.Max.Y
-	// }
-
-	// var lMinX, lMinY int
-	// if vBoundingRect.Min.X > eBoundingRect.Min.X {
-	// 	lMinX = vBoundingRect.Min.X
-	// } else {
-	// 	lMinX = eBoundingRect.Min.X
-	// }
-	// if vBoundingRect.Min.Y > eBoundingRect.Min.Y {
-	// 	lMinY = vBoundingRect.Min.Y
-	// } else {
-	// 	lMinY = eBoundingRect.Min.Y
-	// }
-
 	lineCxt := gg.NewContext(1024, 1024)
-
 	lineCxt.SetLineWidth(3)
 	lineCxt.SetColor(color.White)
 	lineCxt.SetLineCapSquare()
-	// var scaleAbout float64
-	// var scalingFactor float64
-	// if mapName == "de_dust2" {
-	// 	scaleAbout = 0.0
-	// 	scalingFactor = 0.98
-	// } else {
-	// 	scaleAbout = 528.0
-	// 	scalingFactor = 0.96
-	// }
-	// scalingFactor := 0.98
-	// lineCxt.ScaleAbout(scalingFactor, scalingFactor, float64(0.0), float64(0.0))
+
 	for index := range vData {
 		if index < len(vData) && index < len(eData) {
 			lineCxt.DrawLine(vData[index].X(), vData[index].Y()*-1, eData[index].X(), eData[index].Y()*-1)
