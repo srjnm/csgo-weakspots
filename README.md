@@ -1,5 +1,5 @@
 # CS:GO WeakSpots
-An EZ to use website that Generates Heatmaps through the CS:GO Demo files to Analyze your WeakSpots.
+An EZ to use website that Generates Spotmaps through the CS:GO Demo files to Analyze your WeakSpots.
 
 
 # Output Example
@@ -26,4 +26,4 @@ It mainly uses the following packages and resources:
 * [csgo-overviews](https://github.com/zoidbergwill/csgo-overviews)
 
 # Limitations
-It is not optimized to provide multi-level heatmaps for maps like Nuke, Vertigo, etc.
+It is not optimized to provide multi-level spotmaps for maps like Nuke, Vertigo, etc.
